@@ -2,6 +2,8 @@
 
 ProcessWire payment module for PayPal Express checkout using the v.zero SDK. Originally built for use with apeisa's [PaymentModule](https://github.com/apeisa/PaymentModule/) (PW3 branch).
 
+Extended to use seperate Paypal accounts
+
 ## Requirements
 
 - PHP 5.4 or newer
