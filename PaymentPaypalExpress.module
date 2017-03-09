@@ -33,9 +33,10 @@ class PaymentPaypalExpress extends PaymentModule {
 
 	public function init() {
 		$this->currency = $this->defaultCurrency;
-		if ($this->accessToken) {
+		$this->mandant = $this->modules->get('ParanoiaAboshop')->getMandant();
+		if ($this->mandant->paypal_access_token) {
 			$this->gateway = new \Braintree_Gateway(array(
-			    'accessToken' => $this->accessToken,
+			    'accessToken' => $this->mandant->paypal_access_token,
 			));
 		}
 	}
@@ -79,8 +80,8 @@ class PaymentPaypalExpress extends PaymentModule {
 			"orderId" => $this->id
 		];
 		// add optional params
-		if ($this->businessName) {
-			$arr["descriptor"]["name"] = $this->businessName."*WebOrder";
+		if ($this->mandant->paypal_business_name) {
+			$arr["descriptor"]["name"] = $this->mandant->paypal_business_name."*WebOrder";
 		}
 		if ($this->submitForSettlement) {
 			$arr["options"]["submitForSettlement"] = true;
@@ -107,8 +108,8 @@ class PaymentPaypalExpress extends PaymentModule {
 		if ($this->getTotalAmount() <= 0) throw new WireException("Products are not set");
 		if ($this->processUrl == '') throw new WireException("processUrl is not set");
 		if ($this->accessToken == '') throw new WireException("accessToken is not set");
-
 		$out = "
+		<p>Die Rechnung erfolgt im Namen der <b>".$this->mandant->title."</b></p>
 		<script src='https://js.braintreegateway.com/web/3.5.0/js/client.min.js'></script>
 		<script src='https://js.braintreegateway.com/web/3.5.0/js/paypal.min.js'></script>
 		<script src='https://www.paypalobjects.com/api/button.js?'
@@ -121,6 +122,7 @@ class PaymentPaypalExpress extends PaymentModule {
 		     data-button_type='submit'
 		     data-button_disabled='false'
 		 ></script>
+
 		 <form id='{$this->formId}' action='{$this->processUrl}' method='POST'><div id='paypal-container'></div></form>
 		<script>
 
@@ -202,7 +204,7 @@ class PaymentPaypalExpress extends PaymentModule {
 		$f->notes = __("ie. en_gb, en_us. Supported codes are listed [here](https://developer.paypal.com/docs/classic/api/locale_codes/).");
 		if(isset($data['locale'])) $f->value = $data['locale'];
 		$requiredFields->add($f);
-
+		/*
 		$f = $modules->get('InputfieldText');
 		$f->name = 'accessToken';
 		$f->label = __("Access Token");
@@ -213,7 +215,7 @@ class PaymentPaypalExpress extends PaymentModule {
 		$requiredFields->add($f);
 
 		$inputfields->add($requiredFields);
-
+		*/
 		$optionalFields = $modules->get("InputfieldFieldset");
 		$optionalFields->label = __('Optional Fields');
 
@@ -235,7 +237,7 @@ class PaymentPaypalExpress extends PaymentModule {
 		$f->columnWidth = 100;
 		if(isset($data['notificationHTML'])) $f->value = $data['notificationHTML'];
 		$optionalFields->add($f);
-
+		/*
 		$f = $modules->get('InputfieldText');
 		$f->name = 'businessName';
 		$f->label = __("Business Name");
@@ -249,7 +251,7 @@ class PaymentPaypalExpress extends PaymentModule {
 			$_POST['businessName'] = $validatedName;
 		}
 		$optionalFields->add($f);
-
+		*/
 		$f = $modules->get('InputfieldText');
 		$f->name = 'paypalCustomField';
 		$f->label = __("PayPal Custom Field");
