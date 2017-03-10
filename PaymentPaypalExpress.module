@@ -59,7 +59,7 @@ class PaymentPaypalExpress extends PaymentModule {
 
 	private function calculateAmount() {
 		$amount = $this->getTotalAmount() / 100;
-		return number_format($amount,2,'.');
+		return number_format($amount,2,'.',',');
 	}
 
 	private function validateDescription($description) {
